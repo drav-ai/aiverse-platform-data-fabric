@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "name": "TransformationThroughput",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "metric",
+  "description": "Tracks transformation processing throughput",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["TransformExecutor", "DataJoiner", "AggregationComputer"],
+    "condition": "on_success"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "rows_processed": "integer",
+    "rows_output": "integer",
+    "processing_duration_ms": "integer",
+    "transformation_type": "string",
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Observability Spine",
+      "purpose": "Performance monitoring"
+    },
+    {
+      "consumer": "MCOP",
+      "purpose": "Capacity signal for scheduling"
+    }
+  ],
+  "aggregation_hints": {
+    "time_window": "15m",
+    "group_by": ["tenant_context.organization_id", "transformation_type"],
+    "aggregations": ["avg", "p95", "max"]
+  }
+}

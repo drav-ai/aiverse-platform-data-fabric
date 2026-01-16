@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "name": "ConnectionHealthOutcome",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "outcome",
+  "description": "Records connection health test results",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["ConnectionProbe"],
+    "condition": "always"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "connection_ref": "string",
+    "health_status": "string (healthy|degraded|unhealthy)",
+    "latency_ms": "integer",
+    "error_details": "string|null",
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Registry",
+      "purpose": "Connection status metadata"
+    },
+    {
+      "consumer": "Policy Engine",
+      "purpose": "Connection availability policy"
+    }
+  ],
+  "feedback_loop": {
+    "consecutive_failures_threshold": 3,
+    "alert_on_degraded": true
+  }
+}

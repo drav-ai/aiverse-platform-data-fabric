@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "name": "DataProfiler",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.12"
+  },
+  "capability": {
+    "type": "data-profiling",
+    "tags": ["profiling", "quality", "statistics", "stateless"],
+    "description": "Computes statistical profile and quality metrics"
+  },
+  "input_contract": {
+    "profile_input": {
+      "type": "ProfileInput",
+      "required": true,
+      "fields": {
+        "dataset_ref": "string",
+        "sample_size": "integer",
+        "profiling_depth": "string (quick|standard|deep)"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "ProfileResult",
+      "nullable": true,
+      "fields": {
+        "column_stats": "array<ColumnStatistics>",
+        "quality_scores": "object",
+        "detected_patterns": "array<string>",
+        "profiled_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["DATASET_READ_FAILURE", "INVALID_DATASET", "PROFILE_TIMEOUT"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    },
+    "low_confidence": {
+      "type": "boolean"
+    }
+  },
+  "consumer_intents": ["ProfileData"],
+  "failure_modes": [
+    "Dataset read failure: No profile",
+    "Sample too small: Low confidence indicator",
+    "Timeout: No partial profile",
+    "Invalid dataset: Rejected"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "name": "FeatureRetriever",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.11"
+  },
+  "capability": {
+    "type": "feature-retrieval",
+    "tags": ["feature", "retrieval", "serving", "stateless"],
+    "description": "Reads feature values for entities from store"
+  },
+  "input_contract": {
+    "retrieve_input": {
+      "type": "FeatureRetrieveInput",
+      "required": true,
+      "fields": {
+        "feature_set_ref": "string",
+        "entity_keys": "array<object>",
+        "feature_names": "array<string>",
+        "point_in_time": "datetime|null",
+        "store_preference": "string (offline|online)"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "FeatureRetrieveResult",
+      "nullable": true,
+      "fields": {
+        "values": "array<FeatureValue>",
+        "retrieved_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["STORE_READ_FAILURE", "STORE_UNAVAILABLE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["RetrieveFeatures"],
+  "failure_modes": [
+    "Store read failure: No features returned",
+    "Entity not found: Null with indicator",
+    "Feature not materialized: Missing indicator",
+    "Store unavailable: Cannot proceed"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

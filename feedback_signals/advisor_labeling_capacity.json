@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "name": "LabelingCapacityAdvisor",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "advisor",
+  "description": "Advises on labeling task capacity and completion estimates",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["LabelTaskCreator", "LabelRecorder"],
+    "condition": "on_success"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "task_ref": "string",
+    "total_samples": "integer",
+    "labeled_samples": "integer",
+    "completion_percentage": "number",
+    "estimated_completion_time": "datetime|null",
+    "labeling_velocity": "number",
+    "quality_score": "number|null",
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Intent Engine",
+      "purpose": "Labeling intent progress tracking"
+    },
+    {
+      "consumer": "Registry",
+      "purpose": "Label set readiness status"
+    }
+  ],
+  "advisory_weight": {
+    "influence_level": "informational",
+    "override_allowed": true
+  }
+}

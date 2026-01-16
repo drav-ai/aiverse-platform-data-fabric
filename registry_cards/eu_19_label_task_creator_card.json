@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "name": "LabelTaskCreator",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.19"
+  },
+  "capability": {
+    "type": "labeling-task",
+    "tags": ["labeling", "annotation", "task", "stateless"],
+    "description": "Creates label task record"
+  },
+  "input_contract": {
+    "task_input": {
+      "type": "LabelTaskInput",
+      "required": true,
+      "fields": {
+        "source_dataset_ref": "string",
+        "sample_criteria": "object",
+        "label_schema_ref": "string",
+        "quality_requirements": "object"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "LabelTaskResult",
+      "nullable": true,
+      "fields": {
+        "task_id": "uuid",
+        "sample_count": "integer",
+        "status": "string",
+        "created_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["DATASET_NOT_FOUND", "SCHEMA_INVALID", "EMPTY_SELECTION", "REGISTRY_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["CreateLabelTask"],
+  "failure_modes": [
+    "Dataset not found: Rejected",
+    "Schema invalid: Rejected",
+    "Empty selection: Rejected",
+    "Registry failure: No task"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

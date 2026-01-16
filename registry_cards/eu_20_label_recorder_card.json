@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "name": "LabelRecorder",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.20"
+  },
+  "capability": {
+    "type": "label-recording",
+    "tags": ["labeling", "annotation", "recording", "stateless"],
+    "description": "Records single label annotation"
+  },
+  "input_contract": {
+    "record_input": {
+      "type": "LabelRecordInput",
+      "required": true,
+      "fields": {
+        "task_ref": "string",
+        "sample_id": "string",
+        "label_value": "any",
+        "annotator_ref": "uuid"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "LabelRecordResult",
+      "nullable": true,
+      "fields": {
+        "annotation_id": "uuid",
+        "recorded_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["TASK_NOT_FOUND", "SAMPLE_NOT_IN_TASK", "SCHEMA_VIOLATION", "STORAGE_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["CreateLabelTask"],
+  "failure_modes": [
+    "Task not found: Rejected",
+    "Sample not in task: Rejected",
+    "Schema violation: Rejected",
+    "Storage failure: No annotation"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

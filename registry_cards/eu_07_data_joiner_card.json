@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "name": "DataJoiner",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.7"
+  },
+  "capability": {
+    "type": "data-joining",
+    "tags": ["join", "merge", "combine", "stateless"],
+    "description": "Combines two inputs via join specification"
+  },
+  "input_contract": {
+    "join_input": {
+      "type": "JoinInput",
+      "required": true,
+      "fields": {
+        "left_input_ref": "string",
+        "right_input_ref": "string",
+        "join_keys": "array<string>",
+        "join_type": "string (inner|left|right|full)",
+        "output_staging_ref": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "JoinResult",
+      "nullable": true,
+      "fields": {
+        "rows_output": "integer",
+        "matched_count": "integer",
+        "unmatched_left": "integer",
+        "unmatched_right": "integer",
+        "output_staging_ref": "string",
+        "joined_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["LEFT_INPUT_READ_FAILURE", "RIGHT_INPUT_READ_FAILURE", "KEY_MISMATCH", "MEMORY_EXHAUSTED", "OUTPUT_WRITE_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["TransformData"],
+  "failure_modes": [
+    "Input read failure: No output",
+    "Key mismatch: Rejected",
+    "Memory exhaustion: Terminates",
+    "Output write failure: No output"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

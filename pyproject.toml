@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aiverse-platform-data-fabric"
+version = "0.1.0"
+description = "AIVerse Data Fabric Domain Plugin - Stateless execution units for data operations"
+readme = "README.md"
+license = {text = "Proprietary"}
+requires-python = ">=3.11"
+authors = [
+    {name = "AIVerse Team", email = "aiverse@cisco.com"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "aiverse-schemas>=0.0.14",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aiverse_platform_data_fabric*", "execution_units*", "schemas*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.yaml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --cov=. --cov-report=term-missing"

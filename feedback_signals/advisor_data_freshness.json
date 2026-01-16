@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "name": "DataFreshnessAdvisor",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "advisor",
+  "description": "Advises on data freshness requirements and staleness",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["DataProfiler", "DataExtractor"],
+    "condition": "on_success"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "dataset_ref": "string",
+    "last_updated": "datetime",
+    "data_age_seconds": "integer",
+    "freshness_sla_met": "boolean",
+    "recommended_refresh": "boolean",
+    "refresh_reason": "string|null",
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Intent Engine",
+      "purpose": "Auto-trigger ingestion intents"
+    },
+    {
+      "consumer": "Policy Engine",
+      "purpose": "Freshness SLA policy evaluation"
+    }
+  ],
+  "advisory_weight": {
+    "influence_level": "suggestion",
+    "override_allowed": true
+  }
+}

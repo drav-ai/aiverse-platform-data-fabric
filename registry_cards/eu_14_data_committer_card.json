@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "name": "DataCommitter",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.14"
+  },
+  "capability": {
+    "type": "data-versioning",
+    "tags": ["commit", "versioning", "immutable", "stateless"],
+    "description": "Creates immutable commit record for dataset state"
+  },
+  "input_contract": {
+    "commit_input": {
+      "type": "CommitInput",
+      "required": true,
+      "fields": {
+        "dataset_ref": "string",
+        "parent_commit_ref": "string|null",
+        "commit_message": "string",
+        "author_ref": "uuid"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "CommitResult",
+      "nullable": true,
+      "fields": {
+        "commit_id": "string",
+        "changeset_summary": "object",
+        "committed_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["PARENT_NOT_FOUND", "DATASET_READ_FAILURE", "COMMIT_STORAGE_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["CommitDataVersion", "MergeDataBranches"],
+  "failure_modes": [
+    "Dataset read failure: No commit",
+    "Parent not found: Rejected",
+    "Commit storage failure: No commit persisted"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

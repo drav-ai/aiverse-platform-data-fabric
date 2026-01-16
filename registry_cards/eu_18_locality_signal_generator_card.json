@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "name": "LocalitySignalGenerator",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.18"
+  },
+  "capability": {
+    "type": "locality-signaling",
+    "tags": ["locality", "scheduling", "placement", "stateless"],
+    "description": "Produces locality signals for data asset"
+  },
+  "input_contract": {
+    "asset_ref": {
+      "type": "string",
+      "required": true
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "LocalityResult",
+      "nullable": true,
+      "fields": {
+        "signals": "array<LocalitySignal>",
+        "signal_freshness": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["ASSET_NOT_FOUND", "PROBE_TIMEOUT"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    },
+    "has_stale_signals": {
+      "type": "boolean"
+    }
+  },
+  "consumer_intents": ["QueryLocality"],
+  "failure_modes": [
+    "Asset not found: Rejected",
+    "Location unreachable: Partial with indicator",
+    "Timeout: Stale indicator"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

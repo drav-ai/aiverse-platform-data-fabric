@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "name": "MergeComputer",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.16"
+  },
+  "capability": {
+    "type": "data-merging",
+    "tags": ["merge", "versioning", "reconciliation", "stateless"],
+    "description": "Computes merge between two commits, identifies conflicts"
+  },
+  "input_contract": {
+    "merge_input": {
+      "type": "MergeInput",
+      "required": true,
+      "fields": {
+        "source_commit_ref": "string",
+        "target_commit_ref": "string",
+        "common_ancestor_ref": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "MergeComputeResult",
+      "nullable": true,
+      "fields": {
+        "result": "string (success|conflict)",
+        "conflicts": "array<MergeConflict>",
+        "merged_changeset": "object|null",
+        "computed_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["SOURCE_NOT_FOUND", "TARGET_NOT_FOUND", "NO_COMMON_ANCESTOR", "COMMIT_READ_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["MergeDataBranches"],
+  "failure_modes": [
+    "Commit read failure: No merge",
+    "No common ancestor: Rejected",
+    "Unresolvable conflicts: Conflict report returned"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

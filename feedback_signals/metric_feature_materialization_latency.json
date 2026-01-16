@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "name": "FeatureMaterializationLatency",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "metric",
+  "description": "Tracks latency of feature materialization operations",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["FeatureComputer", "FeatureStoreWriter"],
+    "condition": "on_success"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "feature_set_ref": "string",
+    "entities_computed": "integer",
+    "feature_count": "integer",
+    "computation_duration_ms": "integer",
+    "store_write_duration_ms": "integer",
+    "store_type": "string",
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Observability Spine",
+      "purpose": "Feature pipeline monitoring"
+    },
+    {
+      "consumer": "Registry",
+      "purpose": "Feature freshness metadata update"
+    }
+  ],
+  "aggregation_hints": {
+    "time_window": "5m",
+    "group_by": ["feature_set_ref", "store_type"],
+    "aggregations": ["avg", "p50", "p99"]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "name": "SchemaValidator",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.13"
+  },
+  "capability": {
+    "type": "schema-validation",
+    "tags": ["schema", "validation", "quality", "stateless"],
+    "description": "Validates dataset against expected schema"
+  },
+  "input_contract": {
+    "validation_input": {
+      "type": "SchemaValidationInput",
+      "required": true,
+      "fields": {
+        "dataset_ref": "string",
+        "expected_schema_ref": "string",
+        "validation_mode": "string (exact|compatible|subset)"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "SchemaValidationResult",
+      "nullable": true,
+      "fields": {
+        "is_valid": "boolean",
+        "discrepancies": "array<SchemaDiscrepancy>",
+        "validated_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["SCHEMA_UNAVAILABLE", "DATASET_READ_FAILURE", "TYPE_INFERENCE_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    },
+    "is_inconclusive": {
+      "type": "boolean"
+    }
+  },
+  "consumer_intents": ["ValidateSchema"],
+  "failure_modes": [
+    "Dataset read failure: Inconclusive",
+    "Schema unavailable: Cannot proceed",
+    "Type inference failure: Inconclusive"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

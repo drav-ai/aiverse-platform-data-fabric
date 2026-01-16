@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "name": "DataReplicator",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.17"
+  },
+  "capability": {
+    "type": "data-replication",
+    "tags": ["replication", "copy", "locality", "stateless"],
+    "description": "Copies data from source to target storage location"
+  },
+  "input_contract": {
+    "replication_input": {
+      "type": "ReplicationInput",
+      "required": true,
+      "fields": {
+        "source_location_ref": "string",
+        "target_location_ref": "string",
+        "consistency_mode": "string (eventual|strong)"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "ReplicationResult",
+      "nullable": true,
+      "fields": {
+        "bytes_replicated": "integer",
+        "target_confirmed": "string",
+        "checksum_match": "boolean",
+        "replicated_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["SOURCE_READ_FAILURE", "TARGET_WRITE_FAILURE", "CHECKSUM_MISMATCH", "NETWORK_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["ReplicateData"],
+  "failure_modes": [
+    "Source read failure: No replication",
+    "Target write failure: No data persisted",
+    "Checksum mismatch: Failed, no partial",
+    "Network failure: Terminates"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

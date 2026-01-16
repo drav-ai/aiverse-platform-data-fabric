@@ -1,0 +1,49 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: no-commit-to-branch
+        args: ['--branch', 'main']
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - types-all
+        args: [--ignore-missing-imports]
+
+  - repo: local
+    hooks:
+      - id: no-cross-domain-imports
+        name: Check for cross-domain imports
+        entry: bash -c 'if grep -r "from aiverse_platform_training\|from aiverse_platform_agent\|from aiverse_platform_model" --include="*.py" .; then echo "Cross-domain imports detected!"; exit 1; fi'
+        language: system
+        types: [python]
+
+      - id: no-kubernetes-imports
+        name: Check for direct Kubernetes imports
+        entry: bash -c 'if grep -r "import kubernetes\|from kubernetes" --include="*.py" . | grep -v "# allowed:"; then echo "Direct Kubernetes imports detected!"; exit 1; fi'
+        language: system
+        types: [python]
+
+      - id: no-orchestration-patterns
+        name: Check for orchestration patterns
+        entry: bash -c 'if grep -r "@retry\|asyncio.gather\|while True:" --include="*.py" .; then echo "Orchestration patterns detected!"; exit 1; fi'
+        language: system
+        types: [python]

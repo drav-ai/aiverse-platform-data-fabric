@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "name": "TransformExecutor",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.6"
+  },
+  "capability": {
+    "type": "data-transformation",
+    "tags": ["transform", "processing", "etl", "stateless"],
+    "description": "Applies single transformation to input, produces output"
+  },
+  "input_contract": {
+    "transform_input": {
+      "type": "TransformInput",
+      "required": true,
+      "fields": {
+        "input_data_ref": "string",
+        "transformation_definition": "object",
+        "parameters": "object",
+        "output_staging_ref": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "TransformResult",
+      "nullable": true,
+      "fields": {
+        "rows_processed": "integer",
+        "rows_output": "integer",
+        "output_staging_ref": "string",
+        "transformation_hash": "string",
+        "transformed_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["INPUT_READ_FAILURE", "TRANSFORM_ERROR", "OUTPUT_WRITE_FAILURE", "RESOURCE_EXHAUSTED"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["TransformData"],
+  "failure_modes": [
+    "Input read failure: No output",
+    "Transform error: Rejected with details",
+    "Output write failure: No output persisted",
+    "Resource exhaustion: Terminates, no partial"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

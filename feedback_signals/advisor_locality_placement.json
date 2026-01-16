@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "name": "LocalityPlacementAdvisor",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "advisor",
+  "description": "Provides locality-aware placement recommendations to MCOP",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["LocalitySignalGenerator"],
+    "condition": "on_success"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "asset_ref": "string",
+    "locality_signals": [
+      {
+        "environment_id": "string",
+        "locality_type": "string (local|cached|remote|unavailable)",
+        "transfer_cost_estimate": "number",
+        "confidence": "number"
+      }
+    ],
+    "recommended_environment": "string|null",
+    "recommendation_rationale": "string",
+    "signal_freshness": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "MCOP",
+      "purpose": "Data locality-aware workload placement"
+    },
+    {
+      "consumer": "Intent Engine",
+      "purpose": "Intent decomposition with locality hints"
+    }
+  ],
+  "advisory_weight": {
+    "influence_level": "recommendation",
+    "override_allowed": true
+  }
+}

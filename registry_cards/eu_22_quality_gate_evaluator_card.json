@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "name": "QualityGateEvaluator",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.22"
+  },
+  "capability": {
+    "type": "quality-evaluation",
+    "tags": ["quality", "gate", "validation", "stateless"],
+    "description": "Evaluates data against quality threshold"
+  },
+  "input_contract": {
+    "gate_input": {
+      "type": "QualityGateInput",
+      "required": true,
+      "fields": {
+        "dataset_ref": "string",
+        "quality_rules_ref": "string",
+        "thresholds": "object"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "QualityGateResult",
+      "nullable": true,
+      "fields": {
+        "result": "string (pass|fail|inconclusive)",
+        "metric_values": "object",
+        "violations": "array<QualityViolation>",
+        "evaluated_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["RULES_INVALID", "DATASET_READ_FAILURE", "EVALUATION_TIMEOUT"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    },
+    "is_inconclusive": {
+      "type": "boolean"
+    }
+  },
+  "consumer_intents": ["TransformData", "IngestData"],
+  "failure_modes": [
+    "Dataset read failure: Inconclusive",
+    "Rules invalid: Rejected",
+    "Evaluation timeout: Inconclusive"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

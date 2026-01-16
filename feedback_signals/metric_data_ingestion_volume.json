@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "name": "DataIngestionVolume",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "metric",
+  "description": "Tracks volume of data ingested per intent",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["DataExtractor", "DataWriter"],
+    "condition": "on_success"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "bytes_ingested": "integer",
+    "rows_ingested": "integer",
+    "source_ref": "string",
+    "target_ref": "string",
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Observability Spine",
+      "purpose": "Audit trail and capacity tracking"
+    },
+    {
+      "consumer": "Policy Engine",
+      "purpose": "Quota enforcement feedback"
+    }
+  ],
+  "aggregation_hints": {
+    "time_window": "1h",
+    "group_by": ["tenant_context.organization_id", "tenant_context.workspace_id"],
+    "aggregations": ["sum", "count"]
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "name": "ConnectionProbe",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.2"
+  },
+  "capability": {
+    "type": "connection-testing",
+    "tags": ["connection", "health", "probe", "stateless"],
+    "description": "Tests connectivity to external data source"
+  },
+  "input_contract": {
+    "probe_input": {
+      "type": "ConnectionProbeInput",
+      "required": true,
+      "fields": {
+        "connection_ref": "string",
+        "credential_ref": "string",
+        "timeout_seconds": "integer"
+      }
+    },
+    "connection_config": {
+      "type": "object",
+      "required": true
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "ConnectionProbeResult",
+      "nullable": true,
+      "fields": {
+        "health_status": "string (healthy|degraded|unhealthy)",
+        "latency_ms": "integer",
+        "error_details": "string|null",
+        "probed_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["CREDENTIAL_UNAVAILABLE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["TestConnection"],
+  "failure_modes": [
+    "Timeout: Returns unhealthy status",
+    "Auth failure: Returns unhealthy with auth error",
+    "Network unreachable: Returns unhealthy with network error",
+    "Credential unavailable: Cannot start"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

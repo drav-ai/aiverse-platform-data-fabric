@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "name": "SchemaIntrospector",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.3"
+  },
+  "capability": {
+    "type": "schema-discovery",
+    "tags": ["schema", "introspection", "discovery", "stateless"],
+    "description": "Extracts schema metadata from data source"
+  },
+  "input_contract": {
+    "introspection_input": {
+      "type": "SchemaIntrospectionInput",
+      "required": true,
+      "fields": {
+        "connection_ref": "string",
+        "source_path": "string",
+        "sample_size": "integer"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "SchemaIntrospectionResult",
+      "nullable": true,
+      "fields": {
+        "fields": "array<FieldDefinition>",
+        "primary_keys": "array<string>",
+        "row_count_estimate": "integer",
+        "sample_values": "object",
+        "introspected_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["CONNECTION_FAILURE", "ACCESS_DENIED", "SOURCE_NOT_FOUND"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    },
+    "is_truncated": {
+      "type": "boolean"
+    }
+  },
+  "consumer_intents": ["DiscoverSchema"],
+  "failure_modes": [
+    "Connection failure: No schema returned",
+    "Access denied: Rejected with permission error",
+    "Source not found: Rejected with not-found error",
+    "Oversized schema: Truncated with indicator"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

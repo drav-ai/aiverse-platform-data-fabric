@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "name": "DataQualityGateOutcome",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "outcome",
+  "description": "Records pass/fail outcome of quality gate evaluations",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["QualityGateEvaluator"],
+    "condition": "always"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "dataset_ref": "string",
+    "quality_rules_ref": "string",
+    "gate_result": "string (pass|fail|inconclusive)",
+    "metric_values": "object",
+    "violations": [
+      {
+        "rule_name": "string",
+        "expected": "number",
+        "actual": "number"
+      }
+    ],
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Policy Engine",
+      "purpose": "Downstream intent blocking based on quality"
+    },
+    {
+      "consumer": "Observability Spine",
+      "purpose": "Quality trend analysis"
+    },
+    {
+      "consumer": "Registry",
+      "purpose": "Dataset quality metadata update"
+    }
+  ],
+  "feedback_loop": {
+    "blocks_downstream": true,
+    "required_for_promotion": true
+  }
+}

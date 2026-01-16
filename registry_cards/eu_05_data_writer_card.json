@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "name": "DataWriter",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.5"
+  },
+  "capability": {
+    "type": "data-writing",
+    "tags": ["write", "dataset", "persistence", "stateless"],
+    "description": "Writes staged data to target dataset"
+  },
+  "input_contract": {
+    "write_input": {
+      "type": "DataWriteInput",
+      "required": true,
+      "fields": {
+        "staging_ref": "string",
+        "target_dataset_ref": "string",
+        "write_mode": "string (append|overwrite)",
+        "partition_spec": "object|null"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "DataWriteResult",
+      "nullable": true,
+      "fields": {
+        "bytes_written": "integer",
+        "rows_written": "integer",
+        "target_location": "string",
+        "written_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["STAGING_READ_FAILURE", "TARGET_WRITE_FAILURE", "SCHEMA_MISMATCH", "QUOTA_EXCEEDED"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["IngestData", "TransformData"],
+  "failure_modes": [
+    "Staging read failure: No data written",
+    "Target write failure: No data persisted",
+    "Schema mismatch: Rejected",
+    "Quota exceeded: Rejected"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "name": "DataAssetRegistrar",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.1"
+  },
+  "capability": {
+    "type": "data-registration",
+    "tags": ["registry", "asset", "declaration", "stateless"],
+    "description": "Writes data asset card to Registry"
+  },
+  "input_contract": {
+    "asset_declaration": {
+      "type": "AssetDeclaration",
+      "required": true,
+      "fields": {
+        "asset_type": "string (dataset|feature_set|label_set)",
+        "name": "string",
+        "version": "string",
+        "schema_declaration": "object",
+        "storage_location_ref": "string",
+        "classification": "string (public|internal|confidential|restricted|pii)",
+        "data_format": "string (parquet|delta|iceberg|csv|json|avro)",
+        "owner_ref": "uuid"
+      }
+    },
+    "owner_ref": {
+      "type": "uuid",
+      "required": true
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "RegistrationResult",
+      "nullable": true,
+      "fields": {
+        "asset_id": "uuid",
+        "card_ref": "string",
+        "registered_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["INVALID_DECLARATION", "REGISTRY_UNAVAILABLE", "DUPLICATE_CONFLICT", "AUTHORIZATION_DENIED"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["RegisterDataAsset"],
+  "failure_modes": [
+    "Registry unavailable: No registration occurs",
+    "Invalid declaration: Rejected with validation error",
+    "Duplicate conflict: Rejected with conflict indicator",
+    "Authorization denied: Rejected with permission error"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

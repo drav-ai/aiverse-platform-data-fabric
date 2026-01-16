@@ -1,0 +1,65 @@
+{
+  "metadata": {
+    "name": "DataExtractor",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.4"
+  },
+  "capability": {
+    "type": "data-extraction",
+    "tags": ["extraction", "ingestion", "source", "stateless"],
+    "description": "Reads data from source, writes to staging"
+  },
+  "input_contract": {
+    "extraction_input": {
+      "type": "DataExtractionInput",
+      "required": true,
+      "fields": {
+        "source_connection_ref": "string",
+        "source_query_or_path": "string",
+        "extraction_offset": "integer",
+        "extraction_limit": "integer",
+        "output_format": "string",
+        "target_staging_ref": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "DataExtractionResult",
+      "nullable": true,
+      "fields": {
+        "bytes_extracted": "integer",
+        "rows_extracted": "integer",
+        "staging_ref": "string",
+        "watermark_value": "string|null",
+        "extracted_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["SOURCE_READ_FAILURE", "TARGET_WRITE_FAILURE", "QUOTA_EXCEEDED", "FORMAT_ERROR"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["IngestData"],
+  "failure_modes": [
+    "Source read failure: No data written",
+    "Target write failure: No data persisted",
+    "Quota exceeded: Not committed, bounds returned",
+    "Format error: Rejected"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "name": "FeatureComputer",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.9"
+  },
+  "capability": {
+    "type": "feature-computation",
+    "tags": ["feature", "ml", "computation", "stateless"],
+    "description": "Computes feature values for single feature definition"
+  },
+  "input_contract": {
+    "compute_input": {
+      "type": "FeatureComputeInput",
+      "required": true,
+      "fields": {
+        "source_data_ref": "string",
+        "feature_definition_ref": "string",
+        "entity_key_columns": "array<string>",
+        "time_start": "datetime",
+        "time_end": "datetime",
+        "output_staging_ref": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "FeatureComputeResult",
+      "nullable": true,
+      "fields": {
+        "entities_computed": "integer",
+        "feature_values_count": "integer",
+        "output_staging_ref": "string",
+        "computed_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["DEFINITION_NOT_FOUND", "SOURCE_READ_FAILURE", "COMPUTATION_ERROR", "ENTITY_KEY_MISSING", "OUTPUT_WRITE_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["MaterializeFeatures"],
+  "failure_modes": [
+    "Source read failure: No features",
+    "Computation error: Rejected",
+    "Entity key missing: Rejected",
+    "Output write failure: No features persisted"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

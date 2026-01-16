@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "name": "BranchCreator",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.15"
+  },
+  "capability": {
+    "type": "data-branching",
+    "tags": ["branch", "versioning", "fork", "stateless"],
+    "description": "Creates branch record pointing to commit"
+  },
+  "input_contract": {
+    "branch_input": {
+      "type": "BranchInput",
+      "required": true,
+      "fields": {
+        "dataset_ref": "string",
+        "source_commit_ref": "string",
+        "branch_name": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "BranchResult",
+      "nullable": true,
+      "fields": {
+        "branch_id": "uuid",
+        "head_commit_ref": "string",
+        "created_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["COMMIT_NOT_FOUND", "NAME_CONFLICT", "REGISTRY_WRITE_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["BranchDataset"],
+  "failure_modes": [
+    "Commit not found: Rejected",
+    "Name conflict: Rejected",
+    "Registry write failure: No branch"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

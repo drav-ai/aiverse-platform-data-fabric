@@ -1,0 +1,43 @@
+{
+  "metadata": {
+    "name": "LineageGraphGrowth",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "metric",
+  "description": "Tracks lineage graph growth and complexity",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["LineageEdgeWriter"],
+    "condition": "on_success"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "source_asset_ref": "string",
+    "target_asset_ref": "string",
+    "relationship_type": "string",
+    "edge_depth": "integer",
+    "total_edges_in_workspace": "integer",
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Observability Spine",
+      "purpose": "Lineage completeness tracking"
+    },
+    {
+      "consumer": "Registry",
+      "purpose": "Asset dependency metadata"
+    }
+  ],
+  "aggregation_hints": {
+    "time_window": "1d",
+    "group_by": ["tenant_context.workspace_id", "relationship_type"],
+    "aggregations": ["count", "max"]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "name": "AggregationComputer",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.8"
+  },
+  "capability": {
+    "type": "data-aggregation",
+    "tags": ["aggregation", "groupby", "analytics", "stateless"],
+    "description": "Computes aggregates over grouped data"
+  },
+  "input_contract": {
+    "aggregation_input": {
+      "type": "AggregationInput",
+      "required": true,
+      "fields": {
+        "input_data_ref": "string",
+        "group_by_columns": "array<string>",
+        "aggregations": "object (column -> function)",
+        "output_staging_ref": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "AggregationResult",
+      "nullable": true,
+      "fields": {
+        "groups_computed": "integer",
+        "output_staging_ref": "string",
+        "aggregated_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["INPUT_READ_FAILURE", "INVALID_AGGREGATION", "MEMORY_EXHAUSTED", "OUTPUT_WRITE_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["TransformData"],
+  "failure_modes": [
+    "Input read failure: No output",
+    "Invalid aggregation: Rejected",
+    "Memory exhaustion: Terminates",
+    "Output write failure: No output"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "name": "SchemaValidationOutcome",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md"
+  },
+  "signal_type": "outcome",
+  "description": "Records result of schema validation checks",
+  "emission_trigger": {
+    "event": "execution_unit_complete",
+    "execution_units": ["SchemaValidator"],
+    "condition": "always"
+  },
+  "schema": {
+    "intent_id": "uuid",
+    "tenant_context": {
+      "organization_id": "uuid",
+      "workspace_id": "uuid"
+    },
+    "dataset_ref": "string",
+    "expected_schema_ref": "string",
+    "validation_mode": "string",
+    "is_valid": "boolean",
+    "discrepancies": [
+      {
+        "field_name": "string",
+        "expected_type": "string",
+        "actual_type": "string",
+        "issue": "string"
+      }
+    ],
+    "timestamp": "datetime"
+  },
+  "intended_consumers": [
+    {
+      "consumer": "Policy Engine",
+      "purpose": "Schema evolution policy enforcement"
+    },
+    {
+      "consumer": "Registry",
+      "purpose": "Schema compatibility tracking"
+    }
+  ],
+  "feedback_loop": {
+    "blocks_downstream": true,
+    "alerting_threshold": "any_failure"
+  }
+}

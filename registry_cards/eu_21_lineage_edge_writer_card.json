@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "name": "LineageEdgeWriter",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.21"
+  },
+  "capability": {
+    "type": "lineage-recording",
+    "tags": ["lineage", "provenance", "graph", "stateless"],
+    "description": "Records lineage relationship between assets"
+  },
+  "input_contract": {
+    "edge_input": {
+      "type": "LineageEdgeInput",
+      "required": true,
+      "fields": {
+        "source_asset_ref": "string",
+        "target_asset_ref": "string",
+        "relationship_type": "string",
+        "execution_ref": "string"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "LineageEdgeResult",
+      "nullable": true,
+      "fields": {
+        "edge_id": "uuid",
+        "created_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["SOURCE_NOT_FOUND", "TARGET_NOT_FOUND", "REGISTRY_FAILURE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["IngestData", "TransformData", "MaterializeFeatures"],
+  "failure_modes": [
+    "Source not found: Rejected",
+    "Target not found: Rejected",
+    "Registry failure: No edge"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}

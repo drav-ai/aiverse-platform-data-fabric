@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "name": "FeatureStoreWriter",
+    "version": "1.0.0",
+    "domain": "data-fabric",
+    "adr_reference": "PHASE3-DATA-FABRIC-PLUGIN-SPEC.md#3.10"
+  },
+  "capability": {
+    "type": "feature-storage",
+    "tags": ["feature", "store", "persistence", "stateless"],
+    "description": "Writes feature values to store (offline/online)"
+  },
+  "input_contract": {
+    "write_input": {
+      "type": "FeatureStoreWriteInput",
+      "required": true,
+      "fields": {
+        "staging_ref": "string",
+        "feature_set_ref": "string",
+        "store_type": "string (offline|online)",
+        "ttl_seconds": "integer"
+      }
+    },
+    "tenant_context": {
+      "type": "TenantContext",
+      "required": true
+    }
+  },
+  "output_contract": {
+    "result": {
+      "type": "FeatureStoreWriteResult",
+      "nullable": true,
+      "fields": {
+        "entities_written": "integer",
+        "store_location": "string",
+        "written_at": "datetime"
+      }
+    },
+    "error_code": {
+      "type": "string",
+      "nullable": true,
+      "values": ["TTL_INVALID", "STAGING_READ_FAILURE", "STORE_WRITE_FAILURE", "STORE_UNAVAILABLE"]
+    },
+    "error_message": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "consumer_intents": ["MaterializeFeatures"],
+  "failure_modes": [
+    "Staging read failure: No features written",
+    "Store write failure: No features persisted",
+    "TTL invalid: Rejected",
+    "Store unavailable: Cannot proceed"
+  ],
+  "scheduling": {
+    "mcop_scheduled": true,
+    "stateless": true,
+    "terminable_anytime": true
+  }
+}
