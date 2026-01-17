@@ -54,5 +54,5 @@ warn_return_any = true
 warn_unused_ignores = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-v --cov=. --cov-report=term-missing"
+testpaths = ["tests", "integration/tests"]
+addopts = "-v"

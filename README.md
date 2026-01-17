@@ -102,6 +102,43 @@ To verify domain independence, follow the removal checklist in the ADR:
 
 If any step fails, the architecture has domain coupling that must be fixed.
 
+## MCOP Integration
+
+The domain integrates with MCOP via:
+
+- **Registry Loader** (`integration/mcop/registry_loader.py`) - Loads 22 registry cards
+- **Capability Provider** (`integration/mcop/capability_provider.py`) - Exposes 22 capabilities
+- **Intent Handler** (`integration/mcop/intent_handler.py`) - Routes 15 intents to execution units
+
+## Observability Integration
+
+The domain integrates with the Observability Spine via:
+
+- **Signal Registry** (`integration/observability/signal_registry.py`) - Registers 10 signals
+- **Signal Emitter** (`integration/observability/signal_emitter.py`) - Emits metrics, outcomes, advisors
+
+## Catalog & Governance
+
+The domain provides:
+
+- **Namespacing** (`catalog/namespacing.py`) - Hierarchical multi-tenant isolation
+- **Tagging** (`catalog/tagging.py`) - Standard tag schema with governance
+- **Drift Control** (`policies/drift_control.py`) - Schema, freshness, quality drift detection
+
+## Dashboard Configuration
+
+The observability dashboard configuration is in:
+
+- `dashboards/observability_config.json` - Full dashboard with metrics, outcomes, advisors
+
+## Downstream Integration
+
+See `docs/CAPABILITY-SPEC-DOWNSTREAM.md` for:
+
+- Model Foundry integration (training data, features)
+- Agent Platform integration (data context)
+- Business Operations integration (quality gates)
+
 ## Development
 
 ```bash
@@ -111,12 +148,24 @@ pip install -e ".[dev]"
 # Run tests
 pytest
 
+# Run E2E tests
+pytest integration/tests/e2e/ -v
+
+# Run integration tests
+pytest integration/tests/ -v
+
 # Type checking
 mypy .
 
 # Linting
 ruff check .
 ```
+
+## Reports
+
+Test reports are generated at:
+
+- `reports/MCOP_INTEGRATION_TEST_REPORT.md` - Full integration test results
 
 ## License
 

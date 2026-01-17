@@ -1,0 +1,225 @@
+{
+  "dashboard_id": "data-fabric-observability",
+  "title": "Data Fabric Domain Observability",
+  "version": "1.0.0",
+  "refresh_interval_seconds": 30,
+  "panels": [
+    {
+      "panel_id": "metrics_overview",
+      "title": "Metrics Overview",
+      "type": "stat_grid",
+      "signals": [
+        {
+          "signal_name": "metric_data_ingestion_volume",
+          "display_name": "Data Ingestion Volume",
+          "unit": "bytes",
+          "aggregation": "sum",
+          "time_window": "1h"
+        },
+        {
+          "signal_name": "metric_transformation_throughput",
+          "display_name": "Transform Throughput",
+          "unit": "rows/sec",
+          "aggregation": "avg",
+          "time_window": "1h"
+        },
+        {
+          "signal_name": "metric_feature_materialization_latency",
+          "display_name": "Feature Materialization Latency",
+          "unit": "ms",
+          "aggregation": "p95",
+          "time_window": "1h"
+        },
+        {
+          "signal_name": "metric_lineage_graph_growth",
+          "display_name": "Lineage Nodes",
+          "unit": "count",
+          "aggregation": "last",
+          "time_window": "24h"
+        }
+      ]
+    },
+    {
+      "panel_id": "outcomes_status",
+      "title": "Quality & Health Outcomes",
+      "type": "status_table",
+      "signals": [
+        {
+          "signal_name": "outcome_data_quality_gate",
+          "display_name": "Quality Gates",
+          "status_mapping": {
+            "passed": "success",
+            "failed": "error",
+            "warning": "warning"
+          }
+        },
+        {
+          "signal_name": "outcome_schema_validation",
+          "display_name": "Schema Validations",
+          "status_mapping": {
+            "valid": "success",
+            "invalid": "error",
+            "drift_detected": "warning"
+          }
+        },
+        {
+          "signal_name": "outcome_connection_health",
+          "display_name": "Connection Health",
+          "status_mapping": {
+            "healthy": "success",
+            "degraded": "warning",
+            "unhealthy": "error"
+          }
+        }
+      ]
+    },
+    {
+      "panel_id": "advisor_recommendations",
+      "title": "Advisor Recommendations",
+      "type": "recommendation_list",
+      "signals": [
+        {
+          "signal_name": "advisor_locality_placement",
+          "display_name": "Locality Placement",
+          "priority": "high",
+          "action_type": "placement_hint"
+        },
+        {
+          "signal_name": "advisor_data_freshness",
+          "display_name": "Data Freshness",
+          "priority": "medium",
+          "action_type": "refresh_suggestion"
+        },
+        {
+          "signal_name": "advisor_labeling_capacity",
+          "display_name": "Labeling Capacity",
+          "priority": "low",
+          "action_type": "capacity_alert"
+        }
+      ]
+    },
+    {
+      "panel_id": "ingestion_time_series",
+      "title": "Ingestion Volume Over Time",
+      "type": "time_series",
+      "signal_name": "metric_data_ingestion_volume",
+      "time_range": "24h",
+      "granularity": "5m",
+      "aggregation": "sum"
+    },
+    {
+      "panel_id": "transform_time_series",
+      "title": "Transformation Throughput Over Time",
+      "type": "time_series",
+      "signal_name": "metric_transformation_throughput",
+      "time_range": "24h",
+      "granularity": "5m",
+      "aggregation": "avg"
+    },
+    {
+      "panel_id": "feature_latency_time_series",
+      "title": "Feature Materialization Latency Over Time",
+      "type": "time_series",
+      "signal_name": "metric_feature_materialization_latency",
+      "time_range": "24h",
+      "granularity": "5m",
+      "aggregation": "p95"
+    },
+    {
+      "panel_id": "quality_gate_history",
+      "title": "Quality Gate History",
+      "type": "event_timeline",
+      "signal_name": "outcome_data_quality_gate",
+      "time_range": "7d",
+      "group_by": "dataset_id"
+    },
+    {
+      "panel_id": "execution_unit_activity",
+      "title": "Execution Unit Activity",
+      "type": "heatmap",
+      "data_source": "execution_traces",
+      "dimensions": {
+        "x": "time",
+        "y": "execution_unit_name",
+        "value": "execution_count"
+      },
+      "time_range": "24h"
+    }
+  ],
+  "filters": [
+    {
+      "filter_id": "tenant_filter",
+      "type": "dropdown",
+      "label": "Tenant",
+      "source": "tenant_context.organization_id",
+      "multi_select": false
+    },
+    {
+      "filter_id": "workspace_filter",
+      "type": "dropdown",
+      "label": "Workspace",
+      "source": "tenant_context.workspace_id",
+      "multi_select": true
+    },
+    {
+      "filter_id": "time_range_filter",
+      "type": "time_range",
+      "label": "Time Range",
+      "presets": ["1h", "6h", "24h", "7d", "30d"],
+      "default": "24h"
+    },
+    {
+      "filter_id": "environment_filter",
+      "type": "dropdown",
+      "label": "Environment",
+      "source": "tags.environment",
+      "options": ["production", "staging", "development"],
+      "multi_select": true
+    }
+  ],
+  "alerts": [
+    {
+      "alert_id": "ingestion_volume_drop",
+      "signal_name": "metric_data_ingestion_volume",
+      "condition": "percent_change < -50",
+      "time_window": "1h",
+      "severity": "warning",
+      "notification_channels": ["slack", "email"]
+    },
+    {
+      "alert_id": "quality_gate_failure",
+      "signal_name": "outcome_data_quality_gate",
+      "condition": "status == 'failed'",
+      "time_window": "5m",
+      "severity": "error",
+      "notification_channels": ["pagerduty", "slack"]
+    },
+    {
+      "alert_id": "connection_unhealthy",
+      "signal_name": "outcome_connection_health",
+      "condition": "status == 'unhealthy'",
+      "time_window": "5m",
+      "severity": "critical",
+      "notification_channels": ["pagerduty"]
+    },
+    {
+      "alert_id": "feature_latency_high",
+      "signal_name": "metric_feature_materialization_latency",
+      "condition": "p95 > 5000",
+      "time_window": "15m",
+      "severity": "warning",
+      "notification_channels": ["slack"]
+    }
+  ],
+  "data_sources": {
+    "observability_spine": {
+      "type": "grpc",
+      "endpoint": "observability-spine.aiverse.svc:9090",
+      "protocol": "otlp"
+    },
+    "execution_traces": {
+      "type": "trace_store",
+      "endpoint": "trace-store.aiverse.svc:9091"
+    }
+  }
+}
