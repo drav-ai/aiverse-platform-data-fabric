@@ -125,12 +125,6 @@ The domain provides:
 - **Tagging** (`catalog/tagging.py`) - Standard tag schema with governance
 - **Drift Control** (`policies/drift_control.py`) - Schema, freshness, quality drift detection
 
-## Dashboard Configuration
-
-The observability dashboard configuration is in:
-
-- `dashboards/observability_config.json` - Full dashboard with metrics, outcomes, advisors
-
 ## Downstream Integration
 
 See `docs/CAPABILITY-SPEC-DOWNSTREAM.md` for:

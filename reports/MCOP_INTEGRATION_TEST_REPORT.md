@@ -248,31 +248,7 @@ All Data Fabric domain components have been validated for:
 
 ---
 
-## 8. Dashboard Configuration Tests
-
-### 8.1 Panel Configuration
-
-| Panel | Signals | Status |
-|-------|---------|--------|
-| Metrics Overview | 4 | CONFIGURED |
-| Outcomes Status | 3 | CONFIGURED |
-| Advisor Recommendations | 3 | CONFIGURED |
-| Time Series Charts | 3 | CONFIGURED |
-| Event Timeline | 1 | CONFIGURED |
-| Heatmap | 1 | CONFIGURED |
-
-### 8.2 Alert Configuration
-
-| Alert | Condition | Status |
-|-------|-----------|--------|
-| ingestion_volume_drop | < -50% | CONFIGURED |
-| quality_gate_failure | status=failed | CONFIGURED |
-| connection_unhealthy | status=unhealthy | CONFIGURED |
-| feature_latency_high | p95 > 5000ms | CONFIGURED |
-
----
-
-## 9. Downstream Domain Integration Tests
+## 8. Downstream Domain Integration Tests
 
 ### 9.1 Capability Discovery
 
@@ -293,7 +269,7 @@ All Data Fabric domain components have been validated for:
 
 ---
 
-## 10. Summary
+## 9. Summary
 
 ### 10.1 Test Results
 
@@ -306,9 +282,10 @@ All Data Fabric domain components have been validated for:
 | BYOT | 10 | 10 | 0 |
 | Removal | 7 | 7 | 0 |
 | Catalog | 6 | 6 | 0 |
-| Dashboard | 5 | 5 | 0 |
 | Downstream | 5 | 5 | 0 |
-| **Total** | **88** | **88** | **0** |
+| **Total** | **83** | **83** | **0** |
+
+**Note:** Dashboard configuration tests are NOT included per ADR-005 Section 1.4 (Out of Scope). Dashboard implementations belong to the frontend or a dedicated observability service.
 
 ### 10.2 Compliance Status
 
@@ -334,7 +311,7 @@ All Data Fabric domain components have been validated for:
 
 ---
 
-## 11. Anomalies and Notes
+## 10. Anomalies and Notes
 
 ### 11.1 Observed Anomalies
 
